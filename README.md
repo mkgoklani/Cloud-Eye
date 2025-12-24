@@ -1,161 +1,167 @@
-# Universal NVR System 📹
-
-**A multi-stage Python & Docker framework for discovering, normalizing, and viewing IP cameras from any vendor.**
-
-## 📋 Project Overview
-
-This system solves the fragmentation in the IP camera market by acting as a universal translation layer. It automates the entire lifecycle of an NVR:
-1.  **Discovery (The Hunter):** Finds devices on the LAN via ARP.
-2.  **Connection (The Diplomat):** Negotiates RTSP streams via ONVIF, Brute-force, or Vendor Hacks.
-3.  **Ingestion (The Normalizer):** Feeds streams into a Go2RTC/FFmpeg core for recording.
-4.  **Visualization (The Dashboard):** A sub-second latency WebRTC interface built with Streamlit.
-
----
-
-## 🏗️ Architecture
-
-| Phase | Script | Purpose | Tech Stack |
-| :--- | :--- | :--- | :--- |
-| **1** | `scanner.py` | Network Scanning & Vendor ID | Scapy, MacVendorLookup |
-| **2** | `connector.py` | Stream Discovery (Triple-Key Protocol) | ONVIF-Zeep, OpenCV |
-| **3** | `config_builder.py` | Infrastructure Automation | Python, Jinja2 logic |
-| **4** | `docker-compose.yml` | NVR Core & Recording Engine | Docker, Go2RTC, FFmpeg |
-| **5** | `app.py` | User Interface | Streamlit, WebRTC |
-
----
-
-## ⚙️ Prerequisites
-
-* **OS:** Linux (Ubuntu/Debian recommended) or macOS. Windows is supported via WSL2.
-* **Python:** 3.8+
-* **Docker:** Docker Engine & Docker Compose installed.
-* **Root Privileges:** Required for ARP scanning (Phase 1).
-
-### Install Python Dependencies
-```bash
-pip3 install scapy mac-vendor-lookup onvif-zeep opencv-python streamlit requests
-
-
-Coding partner
-This is the final piece of the puzzle. A good README.md is the difference between "code that works" and "a deployable product."
-
-Here is the comprehensive documentation for your Universal NVR system. Save this file in the root of your project folder.
-
-The Code: README.md
 Markdown
-# Universal NVR System 📹
+
+# Universal NVR System
 
 **A multi-stage Python & Docker framework for discovering, normalizing, and viewing IP cameras from any vendor.**
+*Scan, Auto-Discover, Normalize, and Record IP Cameras from any vendor.*
 
-## 📋 Project Overview
+---
 
-This system solves the fragmentation in the IP camera market by acting as a universal translation layer. It automates the entire lifecycle of an NVR:
-1.  **Discovery (The Hunter):** Finds devices on the LAN via ARP.
+## Project Overview
+
+This system solves the fragmentation in the IP camera market by acting as a universal translation layer. It automates the entire lifecycle of a Network Video Recorder (NVR):
+
+1.  **Discovery (The Hunter):** Finds devices on the LAN via ARP scanning (Layer 2).
 2.  **Connection (The Diplomat):** Negotiates RTSP streams via ONVIF, Brute-force, or Vendor Hacks.
-3.  **Ingestion (The Normalizer):** Feeds streams into a Go2RTC/FFmpeg core for recording.
+3.  **Ingestion (The Normalizer):** Feeds streams into a Go2RTC/FFmpeg core for 24/7 recording.
 4.  **Visualization (The Dashboard):** A sub-second latency WebRTC interface built with Streamlit.
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
-| Phase | Script | Purpose | Tech Stack |
+| Component | File | Tech Stack | Role |
 | :--- | :--- | :--- | :--- |
-| **1** | `scanner.py` | Network Scanning & Vendor ID | Scapy, MacVendorLookup |
-| **2** | `connector.py` | Stream Discovery (Triple-Key Protocol) | ONVIF-Zeep, OpenCV |
-| **3** | `config_builder.py` | Infrastructure Automation | Python, Jinja2 logic |
-| **4** | `docker-compose.yml` | NVR Core & Recording Engine | Docker, Go2RTC, FFmpeg |
-| **5** | `app.py` | User Interface | Streamlit, WebRTC |
+| **Scanner** | scanner.py | Scapy, MacVendor | Finds devices on LAN via ARP. |
+| **Connector** | connector.py | ONVIF-Zeep, OpenCV | Extracts RTSP video URLs. |
+| **Builder** | config_builder.py | Python | Generates Docker configs. |
+| **Core** | docker-compose.yml | Docker, Go2RTC | Streaming server & Recorder. |
+| **UI** | app.py | Streamlit | Web-based live viewer. |
 
 ---
 
-## ⚙️ Prerequisites
+## Prerequisites
 
-* **OS:** Linux (Ubuntu/Debian recommended) or macOS. Windows is supported via WSL2.
-* **Python:** 3.8+
-* **Docker:** Docker Engine & Docker Compose installed.
-* **Root Privileges:** Required for ARP scanning (Phase 1).
+* **OS:** macOS (Apple Silicon supported), Linux (Ubuntu/Debian). Windows supported via WSL2.
+* **Docker:** Docker Desktop or Docker Engine installed and running.
+* **Python:** Python 3.9+
 
-### Install Python Dependencies
-```bash
-pip3 install scapy mac-vendor-lookup onvif-zeep opencv-python streamlit requests
-🚀 Quick Start Guide
-Step 1: Scan the Network (The Hunter)
-Find all devices on your local subnet.
+---
 
-Note: Requires sudo for raw packet generation.
+## Installation & Quick Start
 
-Output: network_map.json
+### 1. One-Click Setup
+Run the included installer to set up the virtual environment (venv) and install system dependencies.
+
+bash
+chmod +x setup.sh
+./setup.sh
+2. Activate Environment
+Crucial: You must enter the virtual environment before running any project commands.
 
 Bash
+
+source venv/bin/activate
+(You will see (venv) appear in your terminal prompt).
+
+Usage Guide (The 5 Phases)
+Phase 1: Discovery (The Hunter)
+Scan your local network to identify active IP cameras. Requires root privileges for raw packet generation.
+
+Bash
+
+# Replace 192.168.1.0/24 with your actual subnet
 sudo python3 scanner.py -t 192.168.1.0/24
-Step 2: Find the Streams (The Diplomat)
-Run the "Triple-Key Protocol" to unlock video URLs.
+Output: Generates network_map.json
 
-Output: valid_streams.json
+Phase 2: Stream Finding (The Diplomat)
+Unlock the video streams for the discovered devices using the "Triple-Key Protocol" (ONVIF -> RTSP Dictionary -> Vendor Hack).
 
 Bash
+
 python3 connector.py
-Step 3: Build the Core (The Normalizer)
-Generate the go2rtc.yaml config and record_streams.sh recording script.
+Output: Generates valid_streams.json
+
+Phase 3: Configuration (The Normalizer)
+Auto-generate the NVR infrastructure files based on the found streams.
 
 Bash
+
 python3 config_builder.py
-Step 4: Launch the Infrastructure
-Start the Streaming Server and Recorder containers.
+Output: Generates go2rtc.yaml and record_streams.sh
+
+Phase 4: Launch Backend
+Start the recording engine and streaming server containers.
 
 Bash
-docker-compose up -d
-Verify: Check http://localhost:1984 to see the Go2RTC dashboard.
 
-Step 5: Start the Dashboard
-Launch the user interface.
+docker compose up -d
+Verify: Check http://localhost:1984 for the backend status.
+
+Phase 5: Launch Dashboard
+Start the visual interface ("Single Pane of Glass").
 
 Bash
+
 streamlit run app.py
-Access: Open the URL displayed in the terminal (usually http://localhost:8501).
+Access: Open http://localhost:8501 in your browser.
 
-📂 Project Structure
+Interview Demo Guide
+Follow these steps to demonstrate the system capabilities during an interview presentation.
+
+1. Preparation
+
+Ensure Docker is running.
+
+Clear old data: rm *.json *.yaml.
+
+Activate environment: source venv/bin/activate.
+
+2. The "Discovery" Demo
+
+Action: Run sudo python3 scanner.py -t <subnet>.
+
+Explanation: "I am using Layer 2 ARP packets to find devices faster than Nmap. Notice how it identifies the Vendor (e.g., Hikvision) via MAC address."
+
+3. The "Intelligence" Demo
+
+Action: Run python3 connector.py.
+
+Explanation: "The system is now negotiating with the cameras. It tries standard ONVIF first, then falls back to a dictionary attack to find the RTSP path."
+
+4. The "Automation" Demo
+
+Action: Run python3 config_builder.py followed by docker compose up -d.
+
+Explanation: "Instead of manually writing config files, my Python script generates the infrastructure code dynamically and spins up the recording engine."
+
+5. The "Visual" Demo
+
+Action: Run streamlit run app.py.
+
+Explanation: "This dashboard uses WebRTC. Unlike standard HLS streams which have 10-second delays, this feed is sub-second real-time."
+
+Tip: If you dont have cameras, enable "Simulation Mode" in the sidebar to show the UI logic.
+
+Project Structure
 Plaintext
+
 Universal-NVR/
-├── scanner.py          # Phase 1: ARP Scanner
-├── connector.py        # Phase 2: Stream Finder
+├── setup.sh            # One-click installer script
+├── requirements.txt    # Python library dependencies
+├── scanner.py          # Phase 1: Network Discovery Tool
+├── connector.py        # Phase 2: Stream Finder Tool
 ├── config_builder.py   # Phase 3: Config Generator
-├── app.py              # Phase 4: Streamlit UI
-├── docker-compose.yml  # NVR Stack Definition
-├── network_map.json    # Generated by scanner.py
-├── valid_streams.json  # Generated by connector.py
-├── go2rtc.yaml         # Generated by config_builder.py
-├── record_streams.sh   # Generated by config_builder.py
-├── README.md           # Documentation
-└── storage/            # Recording destination (mounted volume)
-🔧 Troubleshooting
-1. "Permission Denied" during Scanning
+├── app.py              # Phase 4: Frontend Dashboard
+├── docker-compose.yml  # Container Orchestration
+├── storage/            # Video Recordings (Mapped Volume)
+└── venv/               # Python Virtual Environment
+Troubleshooting
+1. "Permission Denied" during Scanning ARP scanning requires raw socket access. You must run scanner.py with sudo.
 
-ARP scanning requires Layer 2 access. You must run scanner.py with sudo.
+2. Docker: "Bind for 0.0.0.0:1984 failed" Port 1984 is used by Go2RTC. Ensure no other NVR software (like Frigate) is running.
 
-2. "ONVIF Error" or Library not found
+3. "Streamlit: command not found" You forgot to activate the virtual environment. Run source venv/bin/activate.
 
-Ensure onvif-zeep is installed. Some cameras use non-standard ports (8899, 8000). You can modify connector.py to add these ports to the scan list.
+Shutdown
+To stop the system and save resources:
 
-3. Docker: "Bind for 0.0.0.0:1984 failed"
+Stop Dashboard: Press Ctrl+C in the terminal running Streamlit.
 
-Go2RTC uses port 1984 for its API. Ensure no other service (like Frigate) is using this port, or change the mapping in docker-compose.yml.
-
-4. Recordings not saving
-
-Check permissions on your storage folder.
+Stop Backend: Run the following command:
 
 Bash
-chmod -R 777 /path/to/storage
-🛡️ License
-Project created for educational purposes.
 
-
-### **Final Handover**
-
-You now have a complete, end-to-end codebase.
-1.  **Scanner** to find the hardware.
-2.  **Connector** to hack the software.
-3.  **Builder** to automate the ops.
-4.  **Dashboard** to sell the vision.
+docker compose down
+License
+Project created for educational and development purposes.
