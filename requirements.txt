@@ -1,0 +1,6 @@
+scapy
+mac-vendor-lookup
+onvif-zeep
+opencv-python-headless
+streamlit
+requests

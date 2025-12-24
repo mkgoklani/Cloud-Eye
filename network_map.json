@@ -1,0 +1,11 @@
+[
+    {
+        "ip": "192.168.1.1",
+        "mac": "04:20:84:d7:ec:4d",
+        "vendor": "zte corporation",
+        "ports": [
+            80
+        ],
+        "type": "GENERIC_DEVICE"
+    }
+]

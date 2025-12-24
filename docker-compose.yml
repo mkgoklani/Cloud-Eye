@@ -1,0 +1,43 @@
+services:
+  # 1. The Core (Streaming Server)
+  go2rtc:
+    image: alexxit/go2rtc:latest
+    container_name: nvr_core
+    restart: unless-stopped
+    ports:
+      - "1984:1984"
+      - "8554:8554"
+    volumes:
+      - ./go2rtc.yaml:/config/go2rtc.yaml
+      - ./storage:/storage
+
+  # 2. The Recorder (Fixed for Apple Silicon)
+  recorder:
+    image: alpine:3.19
+    container_name: nvr_recorder
+    restart: unless-stopped
+    # Install FFmpeg first, then run the recording script
+    entrypoint: 
+      - /bin/sh
+      - -c
+      - "apk add --no-cache ffmpeg && /scripts/record_streams.sh"
+    volumes:
+      - ./record_streams.sh:/scripts/record_streams.sh
+      - ./storage:/storage
+    # Allow it to talk to the go2rtc container by name
+    links:
+      - go2rtc
+
+  # 3. The Janitor (Cleanup Service)
+  cleanup:
+    image: alpine:latest
+    container_name: nvr_cleanup
+    restart: unless-stopped
+    volumes:
+      - ./storage:/storage
+    command: >
+      sh -c "while true; do 
+      echo 'Running cleanup...';
+      find /storage -name '*.mp4' -mtime +7 -delete;
+      sleep 3600; 
+      done"

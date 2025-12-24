@@ -1,0 +1,23 @@
+[
+    {
+        "ip": "1.1.1.1",
+        "vendor": "Demo_Bunny",
+        "type": "KNOWN_CAMERA_BRAND",
+        "stream_url": "ffmpeg:https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4#video=h264#audio=aac",
+        "method": "CLOUD_TEST"
+    },
+    {
+        "ip": "2.2.2.2",
+        "vendor": "Demo_Sintel",
+        "type": "KNOWN_CAMERA_BRAND",
+        "stream_url": "ffmpeg:https://media.w3.org/2010/05/sintel/trailer.mp4#video=h264#audio=aac",
+        "method": "CLOUD_TEST"
+    },
+    {
+        "ip": "3.3.3.3",
+        "vendor": "Demo_Tears",
+        "type": "KNOWN_CAMERA_BRAND",
+        "stream_url": "ffmpeg:https://storage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4#video=h264#audio=aac",
+        "method": "CLOUD_TEST"
+    }
+]

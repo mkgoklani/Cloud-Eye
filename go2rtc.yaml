@@ -1,0 +1,13 @@
+streams:
+  Demo_Bunny_1_1_1_1:
+    - ffmpeg:https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4#video=h264#audio=aac
+    - ffmpeg:Demo_Bunny_1_1_1_1#video=copy#audio=aac
+
+  Demo_Sintel_2_2_2_2:
+    - ffmpeg:https://media.w3.org/2010/05/sintel/trailer.mp4#video=h264#audio=aac
+    - ffmpeg:Demo_Sintel_2_2_2_2#video=copy#audio=aac
+
+  Demo_Tears_3_3_3_3:
+    - ffmpeg:https://storage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4#video=h264#audio=aac
+    - ffmpeg:Demo_Tears_3_3_3_3#video=copy#audio=aac
+
